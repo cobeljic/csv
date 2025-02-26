@@ -9,13 +9,20 @@ class Csv
     public array $body;
     public string $path;
 
-    public static function load($path): self
+    public static function load(string $path, string $separator = ','): self
     {
         $instance = new static;
         $instance->path = $path;
-        $instance->data = array_map('str_getcsv', file($path));
-        $instance->header = $instance->data[0];
-        $instance->body = array_slice($instance->data, 1);
+
+        $csv = array_map(function ($line) use ($separator) {
+            return str_getcsv($line, $separator);
+        }, file($instance->path));
+
+        $instance->header = array_shift($csv);
+        $instance->body = array_map(function ($row) use ($instance) {
+            return array_combine($instance->header, $row);
+        }, $csv);
+
         return $instance;
     }
 
@@ -43,7 +50,7 @@ class Csv
     }
 
     public function __toString()
-    {;
+    {
         return file_get_contents($this->path);
     }
 
