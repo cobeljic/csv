@@ -54,4 +54,14 @@ class Csv
         return file_get_contents($this->path);
     }
 
+    public function excludeHeader(array $keys): self
+    {
+        $this->header = array_filter($this->header, fn($key) => !in_array($key, $keys));
+        $this->body = array_map(function ($row) use ($keys) {
+            return array_filter($row, fn($key) => !in_array($key, $keys), ARRAY_FILTER_USE_KEY);
+        }, $this->body);
+
+        return $this;
+    }
+
 }
