@@ -26,11 +26,13 @@ class Csv
         return $instance;
     }
 
-    public function mapped(): array
+    public function mapped(): self
     {
-        return array_map(function ($body) {
+        $this->data = array_map(function ($body) {
             return array_combine($this->header, $body);
         }, $this->body);
+
+        return $this;
     }
 
     public function validate(): bool
@@ -40,7 +42,6 @@ class Csv
                 return false;
             }
         }
-
         return true;
     }
 
@@ -62,6 +63,11 @@ class Csv
         }, $this->body);
 
         return $this;
+    }
+
+    public function get(): array
+    {
+        return $this->data;
     }
 
 }
