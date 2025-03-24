@@ -70,4 +70,15 @@ class Csv
         return $this->data;
     }
 
+    public static function write(string $path, array $header, array $data, string $separator = ','): void
+    {
+        $file = fopen($path, 'w');
+        fputcsv($file, $header, $separator);
+
+        foreach ($data as $row) {
+            fputcsv($file, $row, $separator);
+        }
+
+        fclose($file);
+    }
 }
