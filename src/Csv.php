@@ -82,6 +82,23 @@ class Csv
         fclose($file);
     }
 
+    public static function append(string $path, array $header, array $data, string $separator = ','): void
+    {
+        $shouldWriteHeader = !file_exists($path) || filesize($path) === 0;
+
+        $file = fopen($path, 'a');
+
+        if ($shouldWriteHeader) {
+            fputcsv($file, $header, $separator);
+        }
+
+        foreach ($data as $row) {
+            fputcsv($file, $row, $separator);
+        }
+
+        fclose($file);
+    }
+
     public static function clear(string $path): void
     {
         file_put_contents($path, '');
