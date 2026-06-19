@@ -55,6 +55,15 @@ class Csv
         return file_get_contents($this->path);
     }
 
+    public function nullify(): self
+    {
+        $this->body = array_map(function ($row) {
+            return array_map(fn($value) => $value === 'null' ? null : $value, $row);
+        }, $this->body);
+
+        return $this;
+    }
+
     public function excludeHeader(array $keys): self
     {
         $this->header = array_filter($this->header, fn($key) => !in_array($key, $keys));
