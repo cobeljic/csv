@@ -14,14 +14,22 @@ class Csv
         $instance = new static;
         $instance->path = $path;
 
-        $csv = array_map(function ($line) use ($separator) {
-            return str_getcsv($line, $separator);
-        }, file($instance->path));
+        if (! file_exists($path) || filesize($path) === 0) {
+            $instance->header = [];
+            $instance->body = [];
 
-        $instance->header = array_shift($csv);
-        $instance->body = array_map(function ($row) use ($instance) {
-            return array_combine($instance->header, $row);
-        }, $csv);
+            return $instance;
+        }
+
+        $csv = array_map(
+            fn (string $line) => str_getcsv($line, $separator, '"', '\\'),
+            file($path),
+        );
+
+        $instance->header = array_shift($csv) ?? [];
+        $instance->body = $instance->header !== []
+            ? array_map(fn (array $row) => array_combine($instance->header, $row), $csv)
+            : [];
 
         return $instance;
     }

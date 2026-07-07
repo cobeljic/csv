@@ -17,6 +17,27 @@ class CsvTest extends TestCase
         $this->assertEquals($expected, Csv::load($path));
     }
 
+    function test_it_returns_empty_header_and_body_for_empty_file()
+    {
+        $path = __DIR__ . '/stubs/empty_test.csv';
+        file_put_contents($path, '');
+
+        $csv = Csv::load($path);
+
+        $this->assertSame([], $csv->header);
+        $this->assertSame([], $csv->body);
+
+        unlink($path);
+    }
+
+    function test_it_returns_empty_header_and_body_for_nonexistent_file()
+    {
+        $csv = Csv::load('/tmp/does_not_exist_acronis_test.csv');
+
+        $this->assertSame([], $csv->header);
+        $this->assertSame([], $csv->body);
+    }
+
     function test_is_header_and_rows_column_count_equal()
     {
         $path = __DIR__ . '/stubs/small_test.csv';
